@@ -1,0 +1,21 @@
+class Colors:
+
+    def __init__(self):
+        self.red = (255, 0, 0)
+        self.light_red = (255, 100, 100)
+        self.green = (0, 255, 0)
+        self.light_green = (100, 255, 100)
+        self.blue = (0, 0, 255)
+        self.light_blue = (100, 100, 255)
+        self.yellow = (255, 255, 0)
+        self.light_yellow = (255, 255, 100)
+        self.orange = (255, 165, 0)
+        self.light_orange = (255, 200, 100)
+        self.purple = (128, 0, 128)
+        self.light_purple = (180, 100, 180)
+        self.cyan = (0, 255, 255)
+        self.light_cyan = (100, 255, 255)
+        self.magenta = (255, 0, 255)
+        self.light_magenta = (255, 100, 255)
+        self.white = (255, 255, 255)
+        self.black = (0, 0, 0)
