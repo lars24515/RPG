@@ -214,8 +214,6 @@ class Game:
             self.screen.blit(text_surface, (10, 10))
             text_surface = self.font.render(f"direction: {int(self.player.direction)}", True, (255, 255, 255))  # Render text surface
             self.screen.blit(text_surface, (10, 37))
-            text_surface = self.font.render(f"is_animating: {self.player.is_animating}", True, (255, 255, 255))  # Render text surface
-            self.screen.blit(text_surface, (10, 64))
             text_surface = self.font.render(f"facing: {self.player.facing}", True, (255, 255, 255))  # Render text surface
             self.screen.blit(text_surface, (10, 91))
             text_surface = self.font.render(f"time: {Environment.time_string}", True, (255, 255, 255))  # Render text surface
