@@ -6,7 +6,7 @@ AssetManager = assetManager(transform_scale=64)
 
 class Environment:
 
-    def __init__(self, start_time=1000, time_increment=0.1, rain_frequency=0.00001):
+    def __init__(self, start_time=1000, time_increment=2, rain_frequency=0.001):
         self.time = start_time
         self.time_increment = time_increment
         self.night_opacity = 100
@@ -22,7 +22,7 @@ class Environment:
         self.rain_frame_count = 8
 
         # frame speed
-        self.rain_frame_speed = 0.17
+        self.rain_frame_speed = 0.2
 
     def format_time(self, time):
         formatted_time = "{:02d}:{:02d}".format(int(time) // 100, int(time) % 100)

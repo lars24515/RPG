@@ -193,8 +193,8 @@ class Game:
     
             self.draw(self.player.image, self.player.x, self.player.y)
             # player hand
-            pygame.draw.circle(self.screen, Colors.black, self.player.hand.position, self.player.hand.thickness + 2)
-            pygame.draw.circle(self.screen, Colors.white, self.player.hand.position, self.player.hand.thickness)
+            '''pygame.draw.circle(self.screen, Colors.black, self.player.hand.position, self.player.hand.thickness + 2)
+            pygame.draw.circle(self.screen, Colors.white, self.player.hand.position, self.player.hand.thickness)'''
 
             # time
             Environment.day_night_cycle()
