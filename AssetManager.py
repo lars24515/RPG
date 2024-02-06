@@ -13,8 +13,6 @@ class assetManager:
          self.resources = self.get_images("./Sprites/Resources", transform=True, list=False)
          self.grass_sprites = self.get_images("./Sprites/Resources/Grass", transform=True, list=True)
          self.tree_sprites = self.get_images("./Sprites/Resources/trees", transform=True, list=True)
-         self.render_distance = pygame.image.load("test.png")
-         self.view_distance = pygame.image.load("view_dist.png")
          # player sprites
          
          # front

@@ -59,15 +59,9 @@ class Player:
         # rect
         self.rect = self.image.get_rect()
         self.size = pygame.Vector2(self.image.get_width(), self.image.get_height())
-        self.render_distance_rect = AssetManager.render_distance.get_rect() 
-        self.render_distance_rect.x, self.render_distance_rect.y = self.x, self.y
-        self.view_distance_rect = AssetManager.view_distance.get_rect()
-        self.view_distance_rect.x, self.view_distance_rect.y = self.x, self.y
         self.center_x = self.x + self.rect.width / 2 
         self.center_y = self.y + self.rect.height / 2
         self.hand = self.Hand(self, radius=35, color=(255, 0, 0), thickness=5)
-        self.render_distance_rect.center = (self.center_x, self.center_y)
-        self.view_distance_rect.center = (self.center_x, self.center_y)
     
     def animate(self):
       self.is_animating = True
