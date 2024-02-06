@@ -41,7 +41,7 @@ class Player:
         self.current_sprite = 0
         self.sprite_speed = 0.3
         self.animation_state = "idle" # default
-        self.facing = "North"
+        self.facing = "north"
 
         # frame speed
         self.walking_frame_speed = 0.3
@@ -97,16 +97,16 @@ class Player:
 
               if self.direction < -90 or self.direction >= 180:
                   self.image =  AssetManager.player_back_walk_sprites[int(self.current_sprite)]
-                  self.facing = "North"
+                  self.facing = "north"
               elif -45 <= self.direction < 45:
                 self.image = AssetManager.player_right_walk_sprites[int(self.current_sprite)]
-                self.facing = "East"
+                self.facing = "east"
               elif 0 <= self.direction < 90:
                 self.image = AssetManager.player_front_walk_sprites[int(self.current_sprite)]
-                self.facing = "South"
+                self.facing = "south"
               else:
                 self.image = AssetManager.player_left_walk_sprites[int(self.current_sprite)]
-                self.facing = "West"
+                self.facing = "west"
 
           # Handling idle animation
           case "idle":
@@ -116,16 +116,16 @@ class Player:
 
               if self.direction < -90 or self.direction >= 180:
                 self.image =  AssetManager.player_back_idle_sprites[int(self.current_sprite)]
-                self.facing = "North"
+                self.facing = "north"
               elif -45 <= self.direction < 45:
                 self.image = AssetManager.player_right_idle_sprites[int(self.current_sprite)]
-                self.facing = "East"
+                self.facing = "east"
               elif 0 <= self.direction < 90:
                 self.image = AssetManager.player_front_idle_sprites[int(self.current_sprite)]
-                self.facing = "South"
+                self.facing = "south"
               else:
                 self.image = AssetManager.player_left_idle_sprites[int(self.current_sprite)]
-                self.facing = "West"
+                self.facing = "west"
 
           # Handling attacking animation
           case "attacking":
@@ -135,16 +135,16 @@ class Player:
 
               if self.direction < -90 or self.direction >= 180:
                 self.image =  AssetManager.player_back_attack_sprites[int(self.current_sprite)]
-                self.facing = "North"
+                self.facing = "north"
               elif -45 <= self.direction < 45:
                 self.image = AssetManager.player_right_attack_sprites[int(self.current_sprite)]
-                self.facing = "East"
+                self.facing = "east"
               elif 0 <= self.direction < 90:
                 self.image = AssetManager.player_front_attack_sprites[int(self.current_sprite)]
-                self.facing = "South"
+                self.facing = "south"
               else:
                 self.image = AssetManager.player_left_attack_sprites[int(self.current_sprite)]
-                self.facing = "West"
+                self.facing = "west"
 
           # Handling damage animation
           case "damage":
@@ -154,13 +154,13 @@ class Player:
 
               if self.direction < -90 or self.direction >= 180:
                 self.image =  AssetManager.player_back_damage_sprites[int(self.current_sprite)]
-                self.facing = "North"
+                self.facing = "north"
               elif -45 <= self.direction < 45:
                 self.image = AssetManager.player_right_damage_sprites[int(self.current_sprite)]
-                self.facing = "East"
+                self.facing = "east"
               elif 0 <= self.direction < 90:
                 self.image = AssetManager.player_front_damage_sprites[int(self.current_sprite)]
-                self.facing = "South"
+                self.facing = "south"
               else:
                 self.image = AssetManager.player_left_damage_sprites[int(self.current_sprite)]
-                self.facing = "West"
+                self.facing = "west"

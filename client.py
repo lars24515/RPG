@@ -8,10 +8,12 @@ from player import Player
 from AssetManager import assetManager
 from Tile import Tile
 from colors import Colors
+from Environment import Environment
 
 output = Logger()
 AssetManager = assetManager(transform_scale=64)
 Colors = Colors()
+Environment = Environment()
 
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
@@ -43,21 +45,28 @@ class Hotbar:
     self.slot_size = 40
     self.slot_image = AssetManager.slot_image
     self.rect pygame.Rect(len(self.items) * self.slot_size) ellerno
-    self.items = { } {"banana": item_obj}
-    self.current_item_types = ["apple", "banana"]
+    self.items = { } {"banana": class_obj}
 
     def add_item(self, item, amount=1): # default amount 1 if not specified
-        if item.name not in self.current_item_types:
-            self.current_item_types.append(item.name)
+        if item.name not in self.items:
             self.items.insert({item.name}: item)
         else: # item is already in inventory
             self.items[item.name].stack += amount
     
     def render(self):
         for item, index in enumerate(self.items):
-            game.draw(self.slot_image, x = index*slotsize veit da fan)
+            game.draw(self.slot_image, x = index*slotsize or something idk man)
 
 self.trees = [ (100, 100) = {"image": tree_breaking_img} ]
+
+to do:
+
+dynamic day/night cycle and weather; 12:00 to 24:00 gradual change (opacity)
+( make it so a time corresponds to an opacity value )
+make trees 2 tiles tall
+hotbar
+items
+tile interaction
 
 '''
 
@@ -71,7 +80,7 @@ class Game:
         # since then i can set positions beforehand, and then update the tile
         # object once it is rendered by the player? old
         self.tiles = pygame.sprite.Group()
-        self.player = Player((self.WIDTH // 2), (self.HEIGHT // 2), "lars")
+        self.player = Player( (self.WIDTH // 2) - (AssetManager.player_front_idle_sprites[0].get_width() // 2), (self.HEIGHT // 2) - (AssetManager.player_front_idle_sprites[0].get_height() // 2) , "lars")
         self.clock = pygame.time.Clock()
         self.noise = PerlinNoise(octaves=5, seed=random.randint(0, 100))
         self.scale = 0.05
@@ -82,10 +91,12 @@ class Game:
         self.visible_tiles = set()
         self.loading_progress = 0
         self.total_tiles = 20*20
+        self.center_x, self.center_y = self.WIDTH // 2, self.HEIGHT // 2
         pygame.font.init()
         self.font = pygame.font.Font("AurulentSansMNerdFont-Regular.otf", 27)
 
-    def draw(self, img, x, y):
+    def draw(self, img, x, y, opacity=255):
+        img.set_alpha(opacity)
         self.screen.blit(img, (x, y))
     
     def exit(self):
@@ -98,8 +109,8 @@ class Game:
         pygame.display.update()
     
     def generate_world_around_player(self):
-        for x in range(-10, 10):
-            for y in range(-10, 10):
+        for x in range(-16, 16):
+            for y in range(-16, 16):
                 noise_val = self.noise([x * self.scale, y * self.scale])
 
                 # Calculate actual coordinates for the tile
@@ -162,15 +173,11 @@ class Game:
                     if event.key == pygame.K_w:
                         self.player.keyup()
 
-                    
-            
             # general code
 
             self.screen.fill((144, 238, 144))
-            
 
             mouse_position = pygame.Vector2(pygame.mouse.get_pos())
-
             dx = mouse_position.x - self.player.x
             dy = mouse_position.y - self.player.y
             angle = math.atan2(dy, dx)
@@ -183,20 +190,38 @@ class Game:
             self.viewport_y = max(0, min(self.player.y - self.VIEWPORT_HEIGHT // 2, self.HEIGHT - self.VIEWPORT_HEIGHT)) - 60
 
             self.tiles.update(self.player, self.screen, self.viewport_x, self.viewport_y, self.VIEWPORT_HEIGHT, self.VIEWPORT_WIDTH)
-            
+    
             self.draw(self.player.image, self.player.x, self.player.y)
             # player hand
             pygame.draw.circle(self.screen, Colors.black, self.player.hand.position, self.player.hand.thickness + 2)
             pygame.draw.circle(self.screen, Colors.white, self.player.hand.position, self.player.hand.thickness)
 
-            text_surface = self.font.render(f"Animation state: {self.player.animation_state}", True, (255, 255, 255))  # Render text surface
+            # time
+            Environment.day_night_cycle()
+            Environment.weather_cycle()
+
+            if Environment.weather_image != None:
+                self.draw(Environment.weather_image, self.center_x - Environment.weather_image.get_width() // 2, self.center_y - Environment.weather_image.get_height() // 2)
+        
+            
+            
+            # draw night on top of weather
+            self.draw(AssetManager.night, self.center_x - AssetManager.night.get_width() // 2, self.center_y - AssetManager.night.get_height() // 2, opacity=Environment.night_opacity)
+            
+
+            # debugging
+            text_surface = self.font.render(f"animation_state: {self.player.animation_state}", True, (255, 255, 255))  # Render text surface
             self.screen.blit(text_surface, (10, 10))
-            text_surface = self.font.render(f"Player direction: {self.player.direction}", True, (255, 255, 255))  # Render text surface
+            text_surface = self.font.render(f"direction: {int(self.player.direction)}", True, (255, 255, 255))  # Render text surface
             self.screen.blit(text_surface, (10, 37))
-            text_surface = self.font.render(f"Player is_animating: {self.player.is_animating}", True, (255, 255, 255))  # Render text surface
+            text_surface = self.font.render(f"is_animating: {self.player.is_animating}", True, (255, 255, 255))  # Render text surface
             self.screen.blit(text_surface, (10, 64))
-            text_surface = self.font.render(f"Player facing: {self.player.facing}", True, (255, 255, 255))  # Render text surface
+            text_surface = self.font.render(f"facing: {self.player.facing}", True, (255, 255, 255))  # Render text surface
             self.screen.blit(text_surface, (10, 91))
+            text_surface = self.font.render(f"time: {Environment.time_string}", True, (255, 255, 255))  # Render text surface
+            self.screen.blit(text_surface, (10, 118))
+            text_surface = self.font.render(f"weather: {Environment.current_weather}", True, (255, 255, 255))  # Render text surface
+            self.screen.blit(text_surface, (10, 145))
 
             self.clock.tick(60)
             fps = int(self.clock.get_fps())

@@ -12,7 +12,10 @@ class assetManager:
          self.transform_scale = transform_scale
          self.resources = self.get_images("./Sprites/Resources", transform=True, list=False)
          self.grass_sprites = self.get_images("./Sprites/Resources/Grass", transform=True, list=True)
-         self.tree_sprites = self.get_images("./Sprites/Resources/trees", transform=True, list=True)
+         self.tree_img = pygame.image.load("./Sprites/Resources/forest.png").convert_alpha()
+         self.night = pygame.image.load("./Sprites/Enviroment/night.png").convert_alpha()
+         self.rain_sprites = self.get_images("./Sprites/Enviroment/Rain", transform=False, list=True) # render in center of screen
+
          # player sprites
          
          # front

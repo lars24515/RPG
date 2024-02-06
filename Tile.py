@@ -27,6 +27,10 @@ class Tile(pygame.sprite.Sprite):
         self.element = type
         if self.element == "grass":
             self.image = random.choice(AssetManager.grass_sprites)
+        elif self.element == "tree":
+            print("tree made") # printer ike?
+            self.image = AssetManager.tree_img
+            print(self.image.get_height())
         else:
             self.image = AssetManager.resources[type]
         self.rect = self.image.get_rect()
@@ -34,7 +38,7 @@ class Tile(pygame.sprite.Sprite):
 
     def draw(self, screen):
         # Draw the tile onto the screen
-        screen.blit(self.image, (self.rect.x, self.rect.y))
+        screen.blit(self.image, (self.rect.x, self.y))
     
     def update(self, player, screen, viewport_x, viewport_y, VIEWPORT_HEIGHT, VIEWPORT_WIDTH):
         if self.rect == None:
