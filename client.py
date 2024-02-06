@@ -71,7 +71,7 @@ tile interaction
 '''
 
 class Game:
-    def __init__(self, WIDTH, HEIGHT, VIEWPORT_WIDTH=1050, VIEWPORT_HEIGHT=650):
+    def __init__(self, WIDTH, HEIGHT, VIEWPORT_WIDTH, VIEWPORT_HEIGHT):
         self.tile_size = AssetManager.transform_scale
         os.environ['SDL_VIDEO_CENTERED'] = '1'
         self.WIDTH, self.HEIGHT, self.TILESIZE = WIDTH, HEIGHT, self.tile_size
@@ -86,8 +86,8 @@ class Game:
         self.scale = 0.05
         self.VIEWPORT_WIDTH = VIEWPORT_WIDTH
         self.VIEWPORT_HEIGHT = VIEWPORT_HEIGHT
-        self.viewport_x = max(0, min(self.player.x - self.VIEWPORT_WIDTH // 2, self.WIDTH - self.VIEWPORT_WIDTH))
-        self.viewport_y = max(0, min(self.player.y - self.VIEWPORT_HEIGHT // 2, self.HEIGHT - self.VIEWPORT_HEIGHT))
+        self.viewport_x = self.WIDTH // 2 - self.VIEWPORT_WIDTH // 2
+        self.viewport_y = self.HEIGHT // 2 - self.VIEWPORT_HEIGHT // 2
         self.visible_tiles = set()
         self.loading_progress = 0
         self.total_tiles = 20*20
@@ -123,7 +123,7 @@ class Game:
                 elif noise_val < 0.2:
                     tile_type = "grass"
                 elif noise_val < 0.5:
-                    tile_type = "forest"
+                    tile_type = "tree"
                 else:
                     tile_type = "mountain"
 
@@ -230,6 +230,6 @@ class Game:
 
             pygame.display.update()
 
-game = Game(1000, 600)
+game = Game(1000, 600, 1100, 800)
 
 game.run()

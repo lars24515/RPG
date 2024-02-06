@@ -42,10 +42,6 @@ class assetManager:
          self.player_right_attack_sprites = self.get_images("./Sprites/Player/Right/Attack", transform=True, list=True, custom_scale=128)
          self.player_right_damage_sprites = self.get_images("./Sprites/Player/Right/Damage", transform=True, list=True, custom_scale=128)
 
-
-
-
-
       def get_images(self, path, transform=True, list=False, custom_scale=None):
          os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = "1"
          new_map = {}

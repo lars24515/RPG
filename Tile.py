@@ -7,19 +7,6 @@ from output import Logger
 AssetManager = assetManager(transform_scale=64)
 output = Logger()
 
-def random_element():
-    rand_num = random.random() * 100
-    if rand_num < 85:
-        return "grass"
-    elif rand_num < 90:
-        return "tree"
-    elif rand_num < 95:
-        return "stone"
-    elif rand_num < 97.5:
-        return "flower"
-    else:
-        return "bush"
-
 class Tile(pygame.sprite.Sprite):
     def __init__(self, x, y, type):
         super().__init__()
@@ -28,9 +15,8 @@ class Tile(pygame.sprite.Sprite):
         if self.element == "grass":
             self.image = random.choice(AssetManager.grass_sprites)
         elif self.element == "tree":
-            print("tree made") # printer ike?
             self.image = AssetManager.tree_img
-            print(self.image.get_height())
+            self.y -= (self.image.get_height() // 2)
         else:
             self.image = AssetManager.resources[type]
         self.rect = self.image.get_rect()
