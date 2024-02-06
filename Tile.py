@@ -40,7 +40,7 @@ class Tile(pygame.sprite.Sprite):
         if self.rect == None:
             return # cant access code 
         
-        if player.is_animating:
+        if player.is_animating and player.animation_state == "walking":
 
             move_distance = player.velocity
             move_angle = math.radians(player.direction)

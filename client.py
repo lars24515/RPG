@@ -81,9 +81,9 @@ class Game:
         self.viewport_y = max(0, min(self.player.y - self.VIEWPORT_HEIGHT // 2, self.HEIGHT - self.VIEWPORT_HEIGHT))
         self.visible_tiles = set()
         self.loading_progress = 0
-        self.total_tiles = 10 * 10
-        self.tile_surface = pygame.Surface((self.WIDTH, self.HEIGHT))
-        self.tile_surface.set_colorkey(BLACK) # set bg to black
+        self.total_tiles = 20*20
+        pygame.font.init()
+        self.font = pygame.font.Font("AurulentSansMNerdFont-Regular.otf", 27)
 
     def draw(self, img, x, y):
         self.screen.blit(img, (x, y))
@@ -137,7 +137,7 @@ class Game:
                     
                 elif event.type == pygame.MOUSEBUTTONDOWN:
                     if event.button == 1:  # Left mouse button
-                        self.player.animate(angle_degrees)
+                        self.player.animate()
                         self.player.update_anim_state("attacking")
                 elif event.type == pygame.MOUSEBUTTONUP:
                     if event.button == 1:  # Left mouse button
@@ -147,13 +147,16 @@ class Game:
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_ESCAPE:
                         self.exit()
-                
+                    if event.key == pygame.K_h:
+                        self.player.update_anim_state("damage")
+
+
                 # other
                         
                 keys = pygame.key.get_pressed()
 
                 if keys[pygame.K_w]:
-                    self.player.animate(angle_degrees)
+                    self.player.animate()
                 
                 if event.type == pygame.KEYUP:
                     if event.key == pygame.K_w:
@@ -172,7 +175,7 @@ class Game:
             dy = mouse_position.y - self.player.y
             angle = math.atan2(dy, dx)
             angle_degrees = math.degrees(angle)
-            self.player.angle = angle_degrees
+            self.player.direction = angle_degrees
 
             self.player.update()
             
@@ -185,6 +188,15 @@ class Game:
             # player hand
             pygame.draw.circle(self.screen, Colors.black, self.player.hand.position, self.player.hand.thickness + 2)
             pygame.draw.circle(self.screen, Colors.white, self.player.hand.position, self.player.hand.thickness)
+
+            text_surface = self.font.render(f"Animation state: {self.player.animation_state}", True, (255, 255, 255))  # Render text surface
+            self.screen.blit(text_surface, (10, 10))
+            text_surface = self.font.render(f"Player direction: {self.player.direction}", True, (255, 255, 255))  # Render text surface
+            self.screen.blit(text_surface, (10, 37))
+            text_surface = self.font.render(f"Player is_animating: {self.player.is_animating}", True, (255, 255, 255))  # Render text surface
+            self.screen.blit(text_surface, (10, 64))
+            text_surface = self.font.render(f"Player facing: {self.player.facing}", True, (255, 255, 255))  # Render text surface
+            self.screen.blit(text_surface, (10, 91))
 
             self.clock.tick(60)
             fps = int(self.clock.get_fps())

@@ -35,12 +35,19 @@ class Player:
         self.image = AssetManager.player_front_idle_sprites[0]
         self.x, self.y = x, y
         self.angle = 0
-        self.velocity = 3
+        self.velocity = 2
         self.direction = 0
         self.is_animating = False
         self.current_sprite = 0
         self.sprite_speed = 0.3
         self.animation_state = "idle" # default
+        self.facing = "North"
+
+        # frame speed
+        self.walking_frame_speed = 0.3
+        self.attack_frame_speed = 0.3
+        self.idle_frame_speed = 0.3
+        self.damage_frame_speed = 0.2
 
         # frame counts
         self.sprite_frame_count = 12 # default idle animation
@@ -62,8 +69,7 @@ class Player:
         self.render_distance_rect.center = (self.center_x, self.center_y)
         self.view_distance_rect.center = (self.center_x, self.center_y)
     
-    def animate(self, direction):
-      self.direction = direction
+    def animate(self):
       self.is_animating = True
       if not self.animation_state == "walking":
         self.update_anim_state("walking")
@@ -71,94 +77,96 @@ class Player:
     def keyup(self):
       self.is_animating = False
       self.current_sprite = 0
+      self.update_anim_state("idle")
     
     def update_anim_state(self, state):
       self.animation_state = state
       self.current_sprite = 0
-      print("set state to", state)
 
     def update(self):
       # only update own position, not blit
-      self.hand.angle = self.angle
+      self.hand.angle = self.direction
       self.hand.update()
-
-      self.current_sprite += self.sprite_speed
 
       if self.current_sprite >= self.idle_frame_count:
           self.current_sprite = 0
 
-      # do this for each animation, sadly..
-      if self.direction >= 0 and self.direction < 90: # back
-        self.image = AssetManager.player_back_idle_sprites[int(self.current_sprite)]
-      elif self.direction == 90: # right
-        self.image = AssetManager.player_right_idle_sprites[int(self.current_sprite)]
-      elif self.direction > 90 and self.direction < 180: # front
-        self.image = AssetManager.player_front_idle_sprites[int(self.current_sprite)]
-      elif self.direction == 180: # left
-        self.image = AssetManager.player_left_idle_sprites[int(self.current_sprite)]
-      elif self.direction > 180 and self.direction < 270: # front
-        self.image = AssetManager.player_front_idle_sprites[int(self.current_sprite)]
-      elif self.direction == 270: # left
-        self.image = AssetManager.player_left_idle_sprites[int(self.current_sprite)]
-      elif self.direction > 270 and self.direction < 360: # back
-        self.image = AssetManager.player_back_idle_sprites[int(self.current_sprite)]
+      self.direction = self.direction % 360
 
-      if self.is_animating:  
-        # make sure to account for, for example, changing directions while attacking.
-        match self.animation_state: # not idle since its not 'animated'
+      # Make sure to account for, for example, changing directions while attacking.
+      match self.animation_state:
+          # Handling walking animation
           case "walking":
-            if self.current_sprite >= self.walking_frame_count:
-              self.current_sprite = 0
+              self.current_sprite += self.walking_frame_speed
+              if self.current_sprite >= self.walking_frame_count:
+                  self.current_sprite = 0
 
-            if self.direction >= 0 and self.direction < 90: # back
-              self.image = AssetManager.player_back_walk_sprites[int(self.current_sprite)]
-            elif self.direction == 90: # right
-              self.image = AssetManager.player_right_walk_sprites[int(self.current_sprite)]
-            elif self.direction > 90 and self.direction < 180: # front
-              self.image = AssetManager.player_front_walk_sprites[int(self.current_sprite)]
-            elif self.direction == 180: # left
-              self.image = AssetManager.player_left_walk_sprites[int(self.current_sprite)]
-            elif self.direction > 180 and self.direction < 270: # front
-              self.image = AssetManager.player_front_walk_sprites[int(self.current_sprite)]
-            elif self.direction == 270: # left
-              self.image = AssetManager.player_left_walk_sprites[int(self.current_sprite)]
-            elif self.direction > 270 and self.direction < 360: # back
-              self.image = AssetManager.player_back_walk_sprites[int(self.current_sprite)]
+              if self.direction < -90 or self.direction >= 180:
+                  self.image =  AssetManager.player_back_walk_sprites[int(self.current_sprite)]
+                  self.facing = "North"
+              elif -45 <= self.direction < 45:
+                self.image = AssetManager.player_right_walk_sprites[int(self.current_sprite)]
+                self.facing = "East"
+              elif 0 <= self.direction < 90:
+                self.image = AssetManager.player_front_walk_sprites[int(self.current_sprite)]
+                self.facing = "South"
+              else:
+                self.image = AssetManager.player_left_walk_sprites[int(self.current_sprite)]
+                self.facing = "West"
 
+          # Handling idle animation
+          case "idle":
+              self.current_sprite += self.idle_frame_speed
+              if self.current_sprite >= self.idle_frame_count:
+                  self.current_sprite = 0
+
+              if self.direction < -90 or self.direction >= 180:
+                self.image =  AssetManager.player_back_idle_sprites[int(self.current_sprite)]
+                self.facing = "North"
+              elif -45 <= self.direction < 45:
+                self.image = AssetManager.player_right_idle_sprites[int(self.current_sprite)]
+                self.facing = "East"
+              elif 0 <= self.direction < 90:
+                self.image = AssetManager.player_front_idle_sprites[int(self.current_sprite)]
+                self.facing = "South"
+              else:
+                self.image = AssetManager.player_left_idle_sprites[int(self.current_sprite)]
+                self.facing = "West"
+
+          # Handling attacking animation
           case "attacking":
-            if self.current_sprite >= self.attacking_frame_count:
-              self.current_sprite = 0
+              self.current_sprite += self.attack_frame_speed
+              if self.current_sprite >= self.attacking_frame_count:
+                  self.current_sprite = 0
 
-            if self.direction >= 0 and self.direction < 90: # back
-              self.image = AssetManager.player_back_attack_sprites[int(self.current_sprite)]
-            elif self.direction == 90: # right
-              self.image = AssetManager.player_right_attack_sprites[int(self.current_sprite)]
-            elif self.direction > 90 and self.direction < 180: # front
-              self.image = AssetManager.player_front_attack_sprites[int(self.current_sprite)]
-            elif self.direction == 180: # left
-              self.image = AssetManager.player_left_attack_sprites[int(self.current_sprite)]
-            elif self.direction > 180 and self.direction < 270: # front
-              self.image =  AssetManager.player_front_attack_sprites[int(self.current_sprite)]
-            elif self.direction == 270: # left
-              self.image = AssetManager.player_left_attack_sprites[int(self.current_sprite)]
-            elif self.direction > 270 and self.direction < 360: # back
-              self.image = AssetManager.player_back_attack_sprites[int(self.current_sprite)]
+              if self.direction < -90 or self.direction >= 180:
+                self.image =  AssetManager.player_back_attack_sprites[int(self.current_sprite)]
+                self.facing = "North"
+              elif -45 <= self.direction < 45:
+                self.image = AssetManager.player_right_attack_sprites[int(self.current_sprite)]
+                self.facing = "East"
+              elif 0 <= self.direction < 90:
+                self.image = AssetManager.player_front_attack_sprites[int(self.current_sprite)]
+                self.facing = "South"
+              else:
+                self.image = AssetManager.player_left_attack_sprites[int(self.current_sprite)]
+                self.facing = "West"
 
+          # Handling damage animation
           case "damage":
-            if self.current_sprite >= self.damage_frame_count:
-              self.current_sprite = 0
+              self.current_sprite += self.damage_frame_speed
+              if self.current_sprite >= self.damage_frame_count:
+                  self.current_sprite = 0
 
-            if self.direction >= 0 and self.direction < 90: # back
-              self.image = AssetManager.player_back_damage_sprites[int(self.current_sprite)]
-            elif self.direction == 90: # right
-              self.image = AssetManager.player_right_damage_sprites[int(self.current_sprite)]
-            elif self.direction > 90 and self.direction < 180: # front
-              self.image = AssetManager.player_front_damage_sprites[int(self.current_sprite)]
-            elif self.direction == 180: # left
-              self.image = AssetManager.player_left_damage_sprites[int(self.current_sprite)]
-            elif self.direction > 180 and self.direction < 270: # front
-              self.image = AssetManager.player_front_damage_sprites[int(self.current_sprite)]
-            elif self.direction == 270: # left
-              self.image = AssetManager.player_left_damage_sprites[int(self.current_sprite)]
-            elif self.direction > 270 and self.direction < 360: # back
-              self.image = AssetManager.player_back_damage_sprites[int(self.current_sprite)]
+              if self.direction < -90 or self.direction >= 180:
+                self.image =  AssetManager.player_back_damage_sprites[int(self.current_sprite)]
+                self.facing = "North"
+              elif -45 <= self.direction < 45:
+                self.image = AssetManager.player_right_damage_sprites[int(self.current_sprite)]
+                self.facing = "East"
+              elif 0 <= self.direction < 90:
+                self.image = AssetManager.player_front_damage_sprites[int(self.current_sprite)]
+                self.facing = "South"
+              else:
+                self.image = AssetManager.player_left_damage_sprites[int(self.current_sprite)]
+                self.facing = "West"
