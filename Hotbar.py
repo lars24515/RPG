@@ -1,24 +1,35 @@
 from colors import Colors
 from output import Logger
+from AssetManager import assetManager
 
 Colors = Colors()
 output = Logger()
+AssetManager = assetManager()
+
+def axe_callback(self):
+    output.info("axe callback", "Hotbar")
+
+item_callbacks = {
+    "Axe": axe_callback
+}
 
 class Item:
 
     def __init__(self, name, count):
         self.name, self.count = name, count
-        self.cateogry = "" # index a category dict or smt
+        self.cateogry = "" # index a category dict or smt; placable, consumable, etc.
+        self.callback = item_callbacks[self.name]
+        self.image = AssetManager.item_images[self.name]
 
 class Hotbar:
-    def __init__(self, x, y, start_items: list = []):
+    def __init__(self, x, y, start_items: dict = {}):
         self.x, self.y = x, y
         self.item_slots = 10
         self.slot_size = 40
         self.selected_slot = 1
         # dont use individual images for slots
         # render in start without slot image
-        self.items = {} # {"obj_name": class_obj}
+        self.items = start_items # {"obj_name": class_obj}
 
     def update_selector(self, selected_slot):
         border_thickness = 3 

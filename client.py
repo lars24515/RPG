@@ -10,12 +10,13 @@ from Tile import Tile
 from colors import Colors
 from Environment import Environment
 from Hotbar import Hotbar
+from Hotbar import Item
 
 output = Logger()
 AssetManager = assetManager(transform_scale=64)
 Colors = Colors()
 Environment = Environment()
-Hotbar = Hotbar(500, 20)
+Hotbar = Hotbar(500, 20, start_items={ "Axe": Item("Axe", 1)})
 
 
 BLACK = (0, 0, 0)
@@ -143,12 +144,14 @@ class Game:
                 pygame.display.set_caption(f"RPG Game - [CLIENT] Map: {int(a)}%")
 
     def render_hotbar_items(self):
-        for index, (key, value) in enumerate(Hotbar.items.items()):
-            output.info(f"{key}: {value}", "Hotbar")
+        for index, (item_name, item_obj) in enumerate(Hotbar.items.items()):
+            print(index, item_name, item_obj)
+            #self.screen.blit(item_obj.image, (Hotbar.x + index * Hotbar.slot_size, Hotbar.y))
 
 
     def run(self):
         self.generate_world_around_player()
+        Hotbar.add_item(Item("Axe", 3))
         while self.running:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -218,6 +221,7 @@ class Game:
             else:
                 self.draw(AssetManager.night, self.center_x - AssetManager.night.get_width() // 2, self.center_y - AssetManager.night.get_height() // 2)
             
+            self.render_hotbar_items()
 
             # debugging
             text_surface = self.font.render(f"animation_state: {self.player.animation_state}", True, (255, 255, 255))  # Render text surface
