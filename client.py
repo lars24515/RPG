@@ -9,11 +9,14 @@ from AssetManager import assetManager
 from Tile import Tile
 from colors import Colors
 from Environment import Environment
+from Hotbar import Hotbar
 
 output = Logger()
 AssetManager = assetManager(transform_scale=64)
 Colors = Colors()
 Environment = Environment()
+Hotbar = Hotbar(500, 20)
+
 
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
@@ -90,10 +93,12 @@ class Game:
         self.viewport_y = self.HEIGHT // 2 - self.VIEWPORT_HEIGHT // 2
         self.visible_tiles = set()
         self.loading_progress = 0
-        self.total_tiles = 20*20
+        self.world_size = 5
+        self.total_tiles = self.world_size*self.world_size
         self.center_x, self.center_y = self.WIDTH // 2, self.HEIGHT // 2
         pygame.font.init()
         self.font = pygame.font.Font("AurulentSansMNerdFont-Regular.otf", 27)
+        self.save_performance = True
 
     def draw(self, img, x, y, opacity=255):
         img.set_alpha(opacity)
@@ -109,8 +114,8 @@ class Game:
         pygame.display.update()
     
     def generate_world_around_player(self):
-        for x in range(-16, 16):
-            for y in range(-16, 16):
+        for x in range(-self.world_size, self.world_size):
+            for y in range(-self.world_size, self.world_size):
                 noise_val = self.noise([x * self.scale, y * self.scale])
 
                 # Calculate actual coordinates for the tile
@@ -136,6 +141,11 @@ class Game:
                 a = self.loading_progress / self.total_tiles
                 a *= 100
                 pygame.display.set_caption(f"RPG Game - [CLIENT] Map: {int(a)}%")
+
+    def render_hotbar_items(self):
+        for index, (key, value) in enumerate(Hotbar.items.items()):
+            output.info(f"{key}: {value}", "Hotbar")
+
 
     def run(self):
         self.generate_world_around_player()
@@ -199,14 +209,14 @@ class Game:
             # time
             Environment.day_night_cycle()
             Environment.weather_cycle()
-
-            if Environment.weather_image != None:
-                self.draw(Environment.weather_image, self.center_x - Environment.weather_image.get_width() // 2, self.center_y - Environment.weather_image.get_height() // 2)
-        
-            
             
             # draw night on top of weather
-            self.draw(AssetManager.night, self.center_x - AssetManager.night.get_width() // 2, self.center_y - AssetManager.night.get_height() // 2, opacity=Environment.night_opacity)
+            if not self.save_performance:
+                if Environment.weather_image != None:
+                    self.draw(Environment.weather_image, self.center_x - Environment.weather_image.get_width() // 2, self.center_y - Environment.weather_image.get_height() // 2)
+                self.draw(AssetManager.night, self.center_x - AssetManager.night.get_width() // 2, self.center_y - AssetManager.night.get_height() // 2, opacity=Environment.night_opacity)
+            else:
+                self.draw(AssetManager.night, self.center_x - AssetManager.night.get_width() // 2, self.center_y - AssetManager.night.get_height() // 2)
             
 
             # debugging
