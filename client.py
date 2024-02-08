@@ -16,7 +16,7 @@ output = Logger()
 AssetManager = assetManager(transform_scale=64)
 Colors = Colors()
 Environment = Environment()
-Hotbar = Hotbar(500, 20, start_items={ "Axe": Item("Axe", 1)})
+Hotbar = Hotbar( ( (1000 // 2) - ((10*40) // 2) ) , 20, start_items={  })
 
 
 BLACK = (0, 0, 0)
@@ -146,17 +146,46 @@ class Game:
                 pygame.display.set_caption(f"RPG Game - [CLIENT] Map: {int(a)}%")
 
     def render_hotbar_items(self):
+        Hotbar.update_selector()
         for index, (item_name, item_obj) in enumerate(Hotbar.items.items()):
             item_x = Hotbar.x + index * Hotbar.slot_size
             self.screen.blit(item_obj.image, (item_x, Hotbar.y))
             text_surface = self.font.render(str(item_obj.stack), True, Colors.white)  
             self.draw(text_surface, (item_x + item_obj.image.get_width()), Hotbar.y - (text_surface.get_height() // 2))
+            # class for displaying text with opacity. draw image then add negative value to opacity gradually
+            
+            if Hotbar.selected_slot > 0:
+                pygame.draw.rect(self.screen, Colors.red, (Hotbar.selector_x, Hotbar.selector_y, Hotbar.selector_width, Hotbar.selector_height), 3)
 
+    def handle_hotbar_input(self, key):
+
+        if Hotbar.selected_slot and Hotbar.selected_slot == key:
+            Hotbar.selected_slot = 0 # un-equip an item
+            return
+
+        keys_list = list(Hotbar.items.keys())
+        if 0 <= key - 1 < len(keys_list) and keys_list[key - 1] is not None:
+            Hotbar.selected_slot = key
+
+       
+
+        
+
+    def handle_keydown(self, event):
+
+        if event.key == pygame.K_ESCAPE:
+            self.exit()
+            return # hopefully the code wont reach this line
+
+        key = event.key - pygame.K_0
+        if 1 <= key <= 9:
+            self.handle_hotbar_input(key)
+            return
+        
+        # other binds
 
     def run(self):
         self.generate_world_around_player()
-        Hotbar.add_item(Item("Axe", 3))
-        Hotbar.add_item(Item("Axe", 3))
         while self.running:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -174,11 +203,7 @@ class Game:
                         self.player.is_animating = False
                     
                 if event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_ESCAPE:
-                        self.exit()
-                    if event.key == pygame.K_h:
-                        self.player.update_anim_state("damage")
-
+                    self.handle_keydown(event)
 
                 # other
                         

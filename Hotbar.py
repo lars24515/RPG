@@ -27,21 +27,16 @@ class Hotbar:
         self.x, self.y = x, y
         self.item_slots = 10
         self.slot_size = 40
-        self.selected_slot = 1
+        self.selected_slot = 0
         # dont use individual images for slots
         # render in start without slot image
         self.items = start_items # {"obj_name": class_obj}
 
-    def update_selector(self, selected_slot):
-        border_thickness = 3 
-        selector_color = Colors.white
-
-        selector_x = self.x + self.slot_size * selected_slot
-        selector_y = self.y
-        selector_width = self.slot_size
-        selector_height = self.slot_size
-
-        #pygame.draw.rect(screen, selector_color, (selector_x, selector_y, selector_width, selector_height), border_thickness)
+    def update_selector(self):
+        self.selector_x = self.x + self.slot_size * (self.selected_slot - 1)
+        self.selector_y = self.y
+        self.selector_width = self.slot_size
+        self.selector_height = self.slot_size
 
     def add_item(self, item_object, count=1):
         if item_object.name not in self.items:
@@ -50,5 +45,6 @@ class Hotbar:
         else: # item already in inventry
             output.info(f"{item_object.name} already in hotbar, increased stack to {self.items[item_object.name].stack + count}", "Hotbar")
             self.items[item_object.name].stack += count
+        print(self.items)
     
     # render items from game loop
