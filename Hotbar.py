@@ -9,16 +9,25 @@ AssetManager = assetManager()
 def axe_callback(self):
     output.info("axe callback", "Hotbar")
 
+def sword_callback(self):
+    output.info("sword callback", "Hotbar")
+
+def pickaxe_callback(self):
+    output.info("pickaxe callback", "Hotbar")
+
 item_callbacks = {
-    "Axe": axe_callback
+    "axe": axe_callback,
+    "sword": sword_callback,
+    "pickaxe": pickaxe_callback,
 }
 
 class Item:
 
     def __init__(self, name, count):
         self.name, self.count = name, count
-        self.cateogry = "" # index a category dict or smt; placable, consumable, etc.
-        self.callback = item_callbacks[self.name]
+        self.cateogry = self.name.split("_")[1] # assuming its "material_objecttype"
+        self.type = "" # index dict ( Axe, sword, etc. for different type of materials ) --> callbacks
+        self.callback = item_callbacks[self.name.split("_")[1]] # assuming its "material_objecttype"
         self.image = AssetManager.item_images[self.name]
         self.stack = 1
 

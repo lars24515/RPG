@@ -19,3 +19,4 @@ class Colors:
         self.light_magenta = (255, 100, 255)
         self.white = (255, 255, 255)
         self.black = (0, 0, 0)
+        self.gray = (128, 128, 128)

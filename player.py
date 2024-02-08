@@ -21,11 +21,8 @@ class Player:
       def update(self):
         adjusted_radius = self.radius / 2 * 1.8
 
-        center_x = self.player.x + self.player.size.x / 2
-        center_y = self.player.y + self.player.size.y / 2
-
-        hand_x = center_x + adjusted_radius * math.cos(math.radians(self.angle))
-        hand_y = center_y + adjusted_radius * math.sin(math.radians(self.angle))
+        hand_x = self.player.center_x + adjusted_radius * math.cos(math.radians(self.angle))
+        hand_y = self.player.center_y + adjusted_radius * math.sin(math.radians(self.angle))
 
         self.position = (int(hand_x), int(hand_y))
     
@@ -42,6 +39,7 @@ class Player:
         self.sprite_speed = 0.3
         self.animation_state = "idle" # default
         self.facing = "north"
+        self.holding_item = None
 
         # frame speed
         self.walking_frame_speed = 0.3
@@ -59,9 +57,9 @@ class Player:
         # rect
         self.rect = self.image.get_rect()
         self.size = pygame.Vector2(self.image.get_width(), self.image.get_height())
-        self.center_x = self.x + self.rect.width / 2 
-        self.center_y = self.y + self.rect.height / 2
-        self.hand = self.Hand(self, radius=35, color=(255, 0, 0), thickness=5)
+        self.center_x = self.x + (self.image.get_width() // 2)
+        self.center_y = self.y + (self.image.get_height() // 2)
+        self.hand = self.Hand(self, radius=20, color=(255, 0, 0), thickness=5)
     
     def animate(self):
       self.is_animating = True
@@ -78,6 +76,7 @@ class Player:
       self.current_sprite = 0
 
     def update(self):
+
       # only update own position, not blit
       self.hand.angle = self.direction
       self.hand.update()

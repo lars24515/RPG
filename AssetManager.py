@@ -11,7 +11,10 @@ class assetManager:
       def __init__(self, transform_scale=64):
          self.transform_scale = transform_scale
 
+         # items
          self.item_images = self.get_images("./Sprites/Items", transform=True, list=False, custom_scale=32)
+         self.item_bg = pygame.transform.scale(pygame.image.load("./Sprites/item_background.png").convert_alpha(), (32, 32))
+
          self.resources = self.get_images("./Sprites/Resources", transform=True, list=False)
          self.grass_sprites = self.get_images("./Sprites/Resources/Grass", transform=True, list=True)
          self.tree_img = pygame.image.load("./Sprites/Resources/forest.png").convert_alpha()

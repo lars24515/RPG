@@ -99,7 +99,7 @@ class Game:
         self.center_x, self.center_y = self.WIDTH // 2, self.HEIGHT // 2
         pygame.font.init()
         self.font = pygame.font.Font("AurulentSansMNerdFont-Regular.otf", 20)
-        self.save_performance = True
+        self.save_performance = False
         if self.save_performance:
             self.world_size = 0
 
@@ -149,27 +149,36 @@ class Game:
         Hotbar.update_selector()
         for index, (item_name, item_obj) in enumerate(Hotbar.items.items()):
             item_x = Hotbar.x + index * Hotbar.slot_size
-            self.screen.blit(item_obj.image, (item_x, Hotbar.y))
+            position = (item_x, Hotbar.y)
+            self.screen.blit(AssetManager.item_bg, position) # render background
+            self.screen.blit(item_obj.image, position)
             text_surface = self.font.render(str(item_obj.stack), True, Colors.white)  
-            self.draw(text_surface, (item_x + item_obj.image.get_width()), Hotbar.y - (text_surface.get_height() // 2))
+            # Render outline of the stack text
+            text_surface_outline = self.font.render(str(item_obj.stack), True, Colors.black)  
+            self.draw(text_surface_outline, (item_x + item_obj.image.get_width() - 5) + 1, Hotbar.y - (text_surface_outline.get_height() // 2) + 1)
+    
+            # Render the stack text
+            text_surface = self.font.render(str(item_obj.stack), True, Colors.white)  
+            self.draw(text_surface, item_x + item_obj.image.get_width() - 5, Hotbar.y - (text_surface.get_height() // 2))
             # class for displaying text with opacity. draw image then add negative value to opacity gradually
             
             if Hotbar.selected_slot > 0:
-                pygame.draw.rect(self.screen, Colors.red, (Hotbar.selector_x, Hotbar.selector_y, Hotbar.selector_width, Hotbar.selector_height), 3)
+                pygame.draw.ellipse(self.screen, Colors.white, (Hotbar.selector_x - 4, Hotbar.selector_y - 4, Hotbar.selector_width, Hotbar.selector_height), 3)
 
     def handle_hotbar_input(self, key):
 
         if Hotbar.selected_slot and Hotbar.selected_slot == key:
             Hotbar.selected_slot = 0 # un-equip an item
+            self.player.holding_item = None
             return
 
         keys_list = list(Hotbar.items.keys())
         if 0 <= key - 1 < len(keys_list) and keys_list[key - 1] is not None:
             Hotbar.selected_slot = key
-
-       
-
-        
+            selected_item_name = keys_list[key - 1]
+            selected_item_obj = Hotbar.items[selected_item_name]
+            self.player.holding_item = selected_item_obj  
+            output.info(f"Equipped {selected_item_name}", "Hotbar")
 
     def handle_keydown(self, event):
 
@@ -186,6 +195,9 @@ class Game:
 
     def run(self):
         self.generate_world_around_player()
+        Hotbar.add_item(Item("wooden_sword", 1))
+        Hotbar.add_item(Item("wooden_pickaxe", 1))
+        Hotbar.add_item(Item("wooden_axe", 1))
         while self.running:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -235,6 +247,10 @@ class Game:
             self.tiles.update(self.player, self.screen, self.viewport_x, self.viewport_y, self.VIEWPORT_HEIGHT, self.VIEWPORT_WIDTH)
     
             self.draw(self.player.image, self.player.x, self.player.y)
+
+            if not self.player.holding_item == None: # player is holding an item
+                self.screen.blit(self.player.holding_item.image, self.player.hand.position)
+
             # player hand
             '''pygame.draw.circle(self.screen, Colors.black, self.player.hand.position, self.player.hand.thickness + 2)
             pygame.draw.circle(self.screen, Colors.white, self.player.hand.position, self.player.hand.thickness)'''
