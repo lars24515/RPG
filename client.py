@@ -98,8 +98,10 @@ class Game:
         self.total_tiles = self.world_size*self.world_size
         self.center_x, self.center_y = self.WIDTH // 2, self.HEIGHT // 2
         pygame.font.init()
-        self.font = pygame.font.Font("AurulentSansMNerdFont-Regular.otf", 27)
+        self.font = pygame.font.Font("AurulentSansMNerdFont-Regular.otf", 20)
         self.save_performance = True
+        if self.save_performance:
+            self.world_size = 0
 
     def draw(self, img, x, y, opacity=255):
         img.set_alpha(opacity)
@@ -145,12 +147,15 @@ class Game:
 
     def render_hotbar_items(self):
         for index, (item_name, item_obj) in enumerate(Hotbar.items.items()):
-            print(index, item_name, item_obj)
-            #self.screen.blit(item_obj.image, (Hotbar.x + index * Hotbar.slot_size, Hotbar.y))
+            item_x = Hotbar.x + index * Hotbar.slot_size
+            self.screen.blit(item_obj.image, (item_x, Hotbar.y))
+            text_surface = self.font.render(str(item_obj.stack), True, Colors.white)  
+            self.draw(text_surface, (item_x + item_obj.image.get_width()), Hotbar.y - (text_surface.get_height() // 2))
 
 
     def run(self):
         self.generate_world_around_player()
+        Hotbar.add_item(Item("Axe", 3))
         Hotbar.add_item(Item("Axe", 3))
         while self.running:
             for event in pygame.event.get():
@@ -218,8 +223,6 @@ class Game:
                 if Environment.weather_image != None:
                     self.draw(Environment.weather_image, self.center_x - Environment.weather_image.get_width() // 2, self.center_y - Environment.weather_image.get_height() // 2)
                 self.draw(AssetManager.night, self.center_x - AssetManager.night.get_width() // 2, self.center_y - AssetManager.night.get_height() // 2, opacity=Environment.night_opacity)
-            else:
-                self.draw(AssetManager.night, self.center_x - AssetManager.night.get_width() // 2, self.center_y - AssetManager.night.get_height() // 2)
             
             self.render_hotbar_items()
 
