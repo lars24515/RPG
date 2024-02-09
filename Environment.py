@@ -6,7 +6,7 @@ AssetManager = assetManager(transform_scale=64)
 
 class Environment:
 
-    def __init__(self, start_time=1000, time_increment=2, rain_frequency=0.001):
+    def __init__(self, start_time=1000, time_increment=0.5, rain_frequency=0.0001):
         self.time = start_time
         self.time_increment = time_increment
         self.night_opacity = 100

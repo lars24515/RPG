@@ -43,7 +43,6 @@ class Tile(pygame.sprite.Sprite):
             self.rect.x, self.rect.y = self.x, self.y
 
 
-        if viewport_x <= self.rect.x <= viewport_x + VIEWPORT_WIDTH \
-        and viewport_y <= self.rect.y <= viewport_y + VIEWPORT_HEIGHT: #inside viewport
+        if viewport_x <= self.rect.x <= viewport_x + VIEWPORT_WIDTH and viewport_y <= self.rect.y <= viewport_y + VIEWPORT_HEIGHT: #inside viewport
             self.draw(screen)
             

@@ -94,12 +94,14 @@ class Game:
         self.viewport_y = self.HEIGHT // 2 - self.VIEWPORT_HEIGHT // 2
         self.visible_tiles = set()
         self.loading_progress = 0
-        self.world_size = 5
+        self.world_size = 40
         self.total_tiles = self.world_size*self.world_size
         self.center_x, self.center_y = self.WIDTH // 2, self.HEIGHT // 2
         pygame.font.init()
         self.font = pygame.font.Font("AurulentSansMNerdFont-Regular.otf", 20)
         self.save_performance = False
+        self.threshold_distance = 70
+        self.close_tiles = pygame.sprite.Group()
         if self.save_performance:
             self.world_size = 0
 
@@ -233,8 +235,8 @@ class Game:
             self.screen.fill((144, 238, 144))
 
             mouse_position = pygame.Vector2(pygame.mouse.get_pos())
-            dx = mouse_position.x - self.player.x
-            dy = mouse_position.y - self.player.y
+            dx = mouse_position.x - self.player.rect.x 
+            dy = mouse_position.y - self.player.rect.y  # if self.player.anim_state == "hitting" and player.hit_progress == 100 ( make it so that like a 60 degree axe image angle == 100 progress )
             angle = math.atan2(dy, dx)
             angle_degrees = math.degrees(angle)
             self.player.direction = angle_degrees
@@ -248,8 +250,32 @@ class Game:
     
             self.draw(self.player.image, self.player.x, self.player.y)
 
+
+            self.close_tiles.empty()
+
+            for tile in self.tiles:
+                tile_distance_to_player = pygame.math.Vector2(tile.rect.center).distance_to(self.player.rect.center)
+                if tile_distance_to_player < self.threshold_distance and tile.element == "tree":
+                    self.close_tiles.add(tile)
+
+
+            # check if close tiles are colliding with player hitbox
+            colliding_tiles = pygame.sprite.spritecollide(self.player, self.close_tiles, False)
+            if colliding_tiles:
+                for sprite in colliding_tiles:
+                    text_surface = self.font.render(sprite.element, True, (255, 0, 0))  # Render text surface
+                    self.screen.blit(text_surface, (sprite.rect.x, sprite.rect.y - text_surface.get_height()))
+                    pygame.draw.rect(self.screen, (255, 0, 0), sprite.rect, width=3)
+
+
+            text_surface = self.font.render("player hitbox", True, (255, 0, 0))  # Render text surface
+            self.screen.blit(text_surface, (self.player.rect.x, self.player.rect.y - text_surface.get_height()))
+            pygame.draw.rect(self.screen, (255, 0, 0), self.player.rect, width=3)
+
             if not self.player.holding_item == None: # player is holding an item
                 self.screen.blit(self.player.holding_item.image, self.player.hand.position)
+                # if angle > 90 flip imaeg
+                pygame.draw.ellipse(self.screen, Colors.white, (self.player.center_x - 20, self.player.center_y - 20, Hotbar.selector_width, Hotbar.selector_height), 3)
 
             # player hand
             '''pygame.draw.circle(self.screen, Colors.black, self.player.hand.position, self.player.hand.thickness + 2)
@@ -273,10 +299,12 @@ class Game:
             text_surface = self.font.render(f"direction: {int(self.player.direction)}", True, (255, 255, 255))  # Render text surface
             self.screen.blit(text_surface, (10, 37))
             text_surface = self.font.render(f"facing: {self.player.facing}", True, (255, 255, 255))  # Render text surface
-            self.screen.blit(text_surface, (10, 91))
+            self.screen.blit(text_surface, (10, 64))
             text_surface = self.font.render(f"time: {Environment.time_string}", True, (255, 255, 255))  # Render text surface
-            self.screen.blit(text_surface, (10, 118))
+            self.screen.blit(text_surface, (10, 91))
             text_surface = self.font.render(f"weather: {Environment.current_weather}", True, (255, 255, 255))  # Render text surface
+            self.screen.blit(text_surface, (10, 118))
+            text_surface = self.font.render(f"colliding with {len(colliding_tiles)} sprites", True, (255, 255, 255))  # Render text surface
             self.screen.blit(text_surface, (10, 145))
 
             self.clock.tick(60)

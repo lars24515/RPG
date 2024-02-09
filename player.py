@@ -56,10 +56,12 @@ class Player:
 
         # rect
         self.rect = self.image.get_rect()
+        self.rect.x, self.rect.y = self.x, self.y
         self.size = pygame.Vector2(self.image.get_width(), self.image.get_height())
         self.center_x = self.x + (self.image.get_width() // 2)
         self.center_y = self.y + (self.image.get_height() // 2)
         self.hand = self.Hand(self, radius=20, color=(255, 0, 0), thickness=5)
+        
     
     def animate(self):
       self.is_animating = True
