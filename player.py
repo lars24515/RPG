@@ -1,6 +1,8 @@
 import pygame
 import math
 
+pygame.mixer.init()
+
 from AssetManager import assetManager
 
 AssetManager = assetManager(transform_scale=64)

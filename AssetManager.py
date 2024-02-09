@@ -20,6 +20,7 @@ class assetManager:
          self.tree_img = pygame.image.load("./Sprites/Resources/forest.png").convert_alpha()
          self.night = pygame.image.load("./Sprites/Enviroment/night.png").convert_alpha()
          self.rain_sprites = self.get_images("./Sprites/Enviroment/Rain", transform=False, list=True) # render in center of screen
+         self.footstep_sound = pygame.mixer.Sound("./Audio/Footstep.mp3")
 
          # player sprites
          

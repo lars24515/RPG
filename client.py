@@ -2,6 +2,7 @@ import pygame
 import sys, random, math, os
 import numpy as np
 from perlin_noise import PerlinNoise
+import time
 
 from output import Logger
 from player import Player
@@ -11,6 +12,8 @@ from colors import Colors
 from Environment import Environment
 from Hotbar import Hotbar
 from Hotbar import Item
+
+pygame.mixer.init()
 
 output = Logger()
 AssetManager = assetManager(transform_scale=64)
@@ -24,6 +27,10 @@ WHITE = (255, 255, 255)
 GREEN = (0, 255, 0)
 
 '''
+
+ -- footsteps
+
+ play the footstep sound in a random pitch
 
 test from school computer
 
@@ -98,10 +105,13 @@ class Game:
         self.total_tiles = self.world_size*self.world_size
         self.center_x, self.center_y = self.WIDTH // 2, self.HEIGHT // 2
         pygame.font.init()
-        self.font = pygame.font.Font("AurulentSansMNerdFont-Regular.otf", 20)
+        self.font = pygame.font.Font("./Fonts/AurulentSansMNerdFont-Regular.otf", 20)
         self.save_performance = False
         self.threshold_distance = 70
         self.close_tiles = pygame.sprite.Group()
+        self.footstep_cooldown = 0  # Cooldown time in seconds
+        self.footstep_cooldown_duration = 0.25  # Adjust as needed
+        self.last_frame_time = time.time()
         if self.save_performance:
             self.world_size = 0
 
@@ -195,6 +205,15 @@ class Game:
         
         # other binds
 
+    def handle_sound(self, dt):
+        # dt represents the time passed since the last frame update
+        if self.player.animation_state == "walking":
+            if self.footstep_cooldown <= 0:
+                AssetManager.footstep_sound.play()
+                self.footstep_cooldown = self.footstep_cooldown_duration
+            else:
+                self.footstep_cooldown -= dt
+
     def run(self):
         self.generate_world_around_player()
         Hotbar.add_item(Item("wooden_sword", 1))
@@ -277,9 +296,14 @@ class Game:
                 # if angle > 90 flip imaeg
                 pygame.draw.ellipse(self.screen, Colors.white, (self.player.center_x - 20, self.player.center_y - 20, Hotbar.selector_width, Hotbar.selector_height), 3)
 
-            # player hand
-            '''pygame.draw.circle(self.screen, Colors.black, self.player.hand.position, self.player.hand.thickness + 2)
-            pygame.draw.circle(self.screen, Colors.white, self.player.hand.position, self.player.hand.thickness)'''
+            # audio
+
+            current_time = time.time()
+            dt = current_time - self.last_frame_time
+            self.last_frame_time = current_time  # Update last frame time for the next iteration
+
+            # Call the handle_sound() function and pass dt
+            self.handle_sound(dt)
 
             # time
             Environment.day_night_cycle()
