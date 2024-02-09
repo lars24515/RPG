@@ -112,6 +112,7 @@ class Game:
         self.footstep_cooldown = 0  # Cooldown time in seconds
         self.footstep_cooldown_duration = 0.25  # Adjust as needed
         self.last_frame_time = time.time()
+        self.debugging_mode = False
         if self.save_performance:
             self.world_size = 0
 
@@ -182,6 +183,7 @@ class Game:
         if Hotbar.selected_slot and Hotbar.selected_slot == key:
             Hotbar.selected_slot = 0 # un-equip an item
             self.player.holding_item = None
+            AssetManager.player_sounds["unequip"].play()
             return
 
         keys_list = list(Hotbar.items.keys())
@@ -190,7 +192,8 @@ class Game:
             selected_item_name = keys_list[key - 1]
             selected_item_obj = Hotbar.items[selected_item_name]
             self.player.holding_item = selected_item_obj  
-            output.info(f"Equipped {selected_item_name}", "Hotbar")
+            AssetManager.player_sounds["equip"].play()
+
 
     def handle_keydown(self, event):
 
@@ -209,13 +212,15 @@ class Game:
         # dt represents the time passed since the last frame update
         if self.player.animation_state == "walking":
             if self.footstep_cooldown <= 0:
-                AssetManager.footstep_sound.play()
+                sound = random.choice(AssetManager.footstep_sounds)
+                sound.play()
                 self.footstep_cooldown = self.footstep_cooldown_duration
             else:
                 self.footstep_cooldown -= dt
 
     def run(self):
         self.generate_world_around_player()
+        AssetManager.environment_sounds["ambience"].play(-1)
         Hotbar.add_item(Item("wooden_sword", 1))
         Hotbar.add_item(Item("wooden_pickaxe", 1))
         Hotbar.add_item(Item("wooden_axe", 1))
@@ -282,19 +287,19 @@ class Game:
             colliding_tiles = pygame.sprite.spritecollide(self.player, self.close_tiles, False)
             if colliding_tiles:
                 for sprite in colliding_tiles:
-                    text_surface = self.font.render(sprite.element, True, (255, 0, 0))  # Render text surface
-                    self.screen.blit(text_surface, (sprite.rect.x, sprite.rect.y - text_surface.get_height()))
-                    pygame.draw.rect(self.screen, (255, 0, 0), sprite.rect, width=3)
+                    if self.debugging_mode:
+                        text_surface = self.font.render(sprite.element, True, (255, 0, 0))  # Render text surface
+                        self.screen.blit(text_surface, (sprite.rect.x, sprite.rect.y - text_surface.get_height()))
+                        pygame.draw.rect(self.screen, (255, 0, 0), sprite.rect, width=3)
 
-
-            text_surface = self.font.render("player hitbox", True, (255, 0, 0))  # Render text surface
-            self.screen.blit(text_surface, (self.player.rect.x, self.player.rect.y - text_surface.get_height()))
-            pygame.draw.rect(self.screen, (255, 0, 0), self.player.rect, width=3)
+            if self.debugging_mode:
+                text_surface = self.font.render("player hitbox", True, (255, 0, 0))  # Render text surface
+                self.screen.blit(text_surface, (self.player.rect.x, self.player.rect.y - text_surface.get_height()))
+                pygame.draw.rect(self.screen, (255, 0, 0), self.player.rect, width=3)
 
             if not self.player.holding_item == None: # player is holding an item
                 self.screen.blit(self.player.holding_item.image, self.player.hand.position)
                 # if angle > 90 flip imaeg
-                pygame.draw.ellipse(self.screen, Colors.white, (self.player.center_x - 20, self.player.center_y - 20, Hotbar.selector_width, Hotbar.selector_height), 3)
 
             # audio
 
@@ -318,18 +323,20 @@ class Game:
             self.render_hotbar_items()
 
             # debugging
-            text_surface = self.font.render(f"animation_state: {self.player.animation_state}", True, (255, 255, 255))  # Render text surface
-            self.screen.blit(text_surface, (10, 10))
-            text_surface = self.font.render(f"direction: {int(self.player.direction)}", True, (255, 255, 255))  # Render text surface
-            self.screen.blit(text_surface, (10, 37))
-            text_surface = self.font.render(f"facing: {self.player.facing}", True, (255, 255, 255))  # Render text surface
-            self.screen.blit(text_surface, (10, 64))
-            text_surface = self.font.render(f"time: {Environment.time_string}", True, (255, 255, 255))  # Render text surface
-            self.screen.blit(text_surface, (10, 91))
-            text_surface = self.font.render(f"weather: {Environment.current_weather}", True, (255, 255, 255))  # Render text surface
-            self.screen.blit(text_surface, (10, 118))
-            text_surface = self.font.render(f"colliding with {len(colliding_tiles)} sprites", True, (255, 255, 255))  # Render text surface
-            self.screen.blit(text_surface, (10, 145))
+            
+            if self.debugging_mode:
+                text_surface = self.font.render(f"animation_state: {self.player.animation_state}", True, (255, 255, 255))  # Render text surface
+                self.screen.blit(text_surface, (10, 10))
+                text_surface = self.font.render(f"direction: {int(self.player.direction)}", True, (255, 255, 255))  # Render text surface
+                self.screen.blit(text_surface, (10, 37))
+                text_surface = self.font.render(f"facing: {self.player.facing}", True, (255, 255, 255))  # Render text surface
+                self.screen.blit(text_surface, (10, 64))
+                text_surface = self.font.render(f"time: {Environment.time_string}", True, (255, 255, 255))  # Render text surface
+                self.screen.blit(text_surface, (10, 91))
+                text_surface = self.font.render(f"weather: {Environment.current_weather}", True, (255, 255, 255))  # Render text surface
+                self.screen.blit(text_surface, (10, 118))
+                text_surface = self.font.render(f"colliding with {len(colliding_tiles)} sprites", True, (255, 255, 255))  # Render text surface
+                self.screen.blit(text_surface, (10, 145))
 
             self.clock.tick(60)
             fps = int(self.clock.get_fps())

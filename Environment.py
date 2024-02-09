@@ -6,7 +6,7 @@ AssetManager = assetManager(transform_scale=64)
 
 class Environment:
 
-    def __init__(self, start_time=1000, time_increment=0.5, rain_frequency=0.0001):
+    def __init__(self, start_time=1000, time_increment=2.5, rain_frequency=0.0001):
         self.time = start_time
         self.time_increment = time_increment
         self.night_opacity = 100
@@ -52,11 +52,13 @@ class Environment:
         self.current_weather = None
         self.current_sprite = 0
         self.weather_image = None
+        AssetManager.environment_sounds["rain"].stop()
 
     def weather_cycle(self):
         if self.current_weather == None: # No weather
             if self.random_value < self.rain_frequency:
                 self.current_weather = "rain"
+                AssetManager.environment_sounds["rain"].play(-1)
         else:
 
             if random.random() < 0.001: # stop weather

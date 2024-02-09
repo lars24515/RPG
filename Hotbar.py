@@ -51,9 +51,10 @@ class Hotbar:
         if item_object.name not in self.items:
             self.items[item_object.name] = item_object
             output.info(f"Added {item_object.name} to hotbar", "Hotbar")
+            AssetManager.player_sounds["equip"].play()
         else: # item already in inventry
             output.info(f"{item_object.name} already in hotbar, increased stack to {self.items[item_object.name].stack + count}", "Hotbar")
             self.items[item_object.name].stack += count
-        print(self.items)
+            AssetManager.player_sounds["equip"].play()
     
     # render items from game loop
