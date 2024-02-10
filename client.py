@@ -233,11 +233,16 @@ class Game:
                     
                 elif event.type == pygame.MOUSEBUTTONDOWN:
                     if event.button == 1:  # Left mouse button
-                        self.player.animate()
-                        self.player.update_anim_state("attacking")
+
+                        if self.player.holding_item == None:
+                            self.player.animate()
+                            self.player.update_anim_state("attacking")
+                        
+                        # other binds
+
                 elif event.type == pygame.MOUSEBUTTONUP:
                     if event.button == 1:  # Left mouse button
-                        self.player.update_anim_state("idle")
+                        self.player.update_anim_state("idle") # when idling while holding item, this will reset idle animation. not first priority.
                         self.player.is_animating = False
                     
                 if event.type == pygame.KEYDOWN:

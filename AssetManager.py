@@ -15,18 +15,22 @@ class assetManager:
          self.item_images = self.get_assets("./Sprites/Items", transform=True, list=False, custom_scale=32)
          self.item_bg = pygame.transform.scale(pygame.image.load("./Sprites/item_background.png").convert_alpha(), (32, 32))
 
+         # environment
          self.resources = self.get_assets("./Sprites/Resources", transform=True, list=False)
          self.grass_sprites = self.get_assets("./Sprites/Resources/Grass", transform=True, list=True)
          self.tree_img = pygame.image.load("./Sprites/Resources/forest.png").convert_alpha()
          self.night = pygame.image.load("./Sprites/Enviroment/night.png").convert_alpha()
          self.rain_sprites = self.get_assets("./Sprites/Enviroment/Rain", transform=False, list=True) # render in center of screen
+
+         # audio
          self.footstep_sounds = self.get_assets("./Audio/Player/Footsteps", transform=False, list=True)
-         for sound in self.footstep_sounds:
-             sound.set_volume(0.1)
+         self.set_volume(self.footstep_sounds, 0.1)
          self.player_sounds = self.get_assets("./Audio/Player", transform=False, list=False)
          self.environment_sounds = self.get_assets("./Audio/Environment", transform=False, list=False)
-         self.environment_sounds["ambience"].set_volume(0.2)
-         self.environment_sounds["rain"].set_volume(0.7)
+         self.environment_sounds["ambience"].set_volume(0.3)
+         self.environment_sounds["rain"].set_volume(1)
+         self.player_attack_sounds = self.get_assets("./Audio/Player/Attack", transform=False, list=True)
+         self.set_volume(self.player_attack_sounds, 0.4)
 
          # player sprites
          
@@ -53,6 +57,10 @@ class assetManager:
          self.player_right_walk_sprites = self.get_assets("./Sprites/Player/Right/Walk", transform=True, list=True, custom_scale=128)
          self.player_right_attack_sprites = self.get_assets("./Sprites/Player/Right/Attack", transform=True, list=True, custom_scale=128)
          self.player_right_damage_sprites = self.get_assets("./Sprites/Player/Right/Damage", transform=True, list=True, custom_scale=128)
+
+      def set_volume(self, list, volume):
+          for sound in list:
+             sound.set_volume(volume)
 
       def get_assets(self, path, transform=True, list=False, custom_scale=None):
          os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = "1"

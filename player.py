@@ -1,10 +1,12 @@
 import pygame
-import math
+import math, random
 
 pygame.mixer.init()
 
 from AssetManager import assetManager
+from output import Logger
 
+output = Logger()
 AssetManager = assetManager(transform_scale=64)
 
 class Player:
@@ -132,9 +134,18 @@ class Player:
 
           # Handling attacking animation
           case "attacking":
+              
+              if not self.holding_item == None: # code shouldnt reach this, its only a precaution
+                 return
+
               self.current_sprite += self.attack_frame_speed
               if self.current_sprite >= self.attacking_frame_count:
                   self.current_sprite = 0
+                
+              # audio
+              if int(self.current_sprite) == 1:
+                random.choice(AssetManager.player_attack_sounds).play() # plays 3 times, fix this. is caused because its 1 for longer than its supposed to.
+                # maybe wait the lenght of the sound?
 
               if self.direction < -90 or self.direction >= 180:
                 self.image =  AssetManager.player_back_attack_sprites[int(self.current_sprite)]
