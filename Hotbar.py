@@ -15,11 +15,6 @@ def sword_callback(self):
 def pickaxe_callback(self):
     output.info("pickaxe callback", "Hotbar")
 
-item_callbacks = {
-    "axe": axe_callback,
-    "sword": sword_callback,
-    "pickaxe": pickaxe_callback,
-}
 
 class Item:
 
@@ -27,11 +22,16 @@ class Item:
         self.name, self.count = name, count
         self.cateogry = self.name.split("_")[1] # assuming its "material_objecttype"
         self.type = "" # index dict ( Axe, sword, etc. for different type of materials ) --> callbacks
-        self.callback = item_callbacks[self.name.split("_")[1]] # assuming its "material_objecttype"
+        self.callback = Hotbar.category_callbacks[self.name.split("_")[1]] # assuming its "material_objecttype"
         self.image = AssetManager.item_images[self.name]
         self.stack = 1
 
 class Hotbar:
+    category_callbacks = {
+        "axe": axe_callback,
+        "sword": sword_callback,
+        "pickaxe": pickaxe_callback,
+    }
     def __init__(self, x, y, start_items: dict = {}):
         self.x, self.y = x, y
         self.item_slots = 10
@@ -40,6 +40,7 @@ class Hotbar:
         # dont use individual images for slots
         # render in start without slot image
         self.items = start_items # {"obj_name": class_obj}
+        
 
     def update_selector(self):
         self.selector_x = self.x + self.slot_size * (self.selected_slot - 1)

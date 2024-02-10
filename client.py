@@ -112,7 +112,7 @@ class Game:
         self.footstep_cooldown = 0  # Cooldown time in seconds
         self.footstep_cooldown_duration = 0.25  # Adjust as needed
         self.last_frame_time = time.time()
-        self.debugging_mode = False
+        self.debugging_mode = True
         if self.save_performance:
             self.world_size = 0
 
@@ -217,6 +217,28 @@ class Game:
                 self.footstep_cooldown = self.footstep_cooldown_duration
             else:
                 self.footstep_cooldown -= dt
+    
+    def clicking(self, sprite):
+        return sprite.rect.collidepoint(pygame.mouse.get_pos()) and pygame.mouse.get_pressed()[0]
+    
+    def handle_sprite_click(self, sprite):
+        output.info("clicked", sprite.element)
+        if not hasattr(sprite, "element") or sprite.element == "grass" or sprite.element == "water": # means sprite is a tile, and not for example player
+            return
+        
+        # if player is holding an item, then hitpoint removal will be 1. but it player is holding an item, it will depend 
+        # on the type of item. index a dict to see how many.
+
+        if sprite.hit_points > 1:
+            
+            if self.player.holding_item == None: # player is using hand
+                sprite.hit_points -= 1
+            else:
+                if hasattr(self.player.holding_item, "category"):
+                    if self.player.holding_item.category in Hotbar.category_callbacks:
+                        sprite.hit_points -= 2 # this means that if the item player is holding is a tool then it will be 2 damage.
+                        # rework this later using a "tool" category which will be much easier
+                        # i just dont wanna work on it right now
 
     def run(self):
         self.generate_world_around_player()
@@ -296,6 +318,13 @@ class Game:
                         text_surface = self.font.render(sprite.element, True, (255, 0, 0))  # Render text surface
                         self.screen.blit(text_surface, (sprite.rect.x, sprite.rect.y - text_surface.get_height()))
                         pygame.draw.rect(self.screen, (255, 0, 0), sprite.rect, width=3)
+
+                    # iterating through each tile player is colliding with:
+                    
+                    if self.clicking(sprite):
+                        if not self.player.hitting_object == sprite:
+                            self.player.hitting_object = sprite
+                            self.handle_sprite_click(sprite)
 
             if self.debugging_mode:
                 text_surface = self.font.render("player hitbox", True, (255, 0, 0))  # Render text surface

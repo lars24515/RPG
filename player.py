@@ -44,6 +44,7 @@ class Player:
         self.animation_state = "idle" # default
         self.facing = "north"
         self.holding_item = None
+        self.hitting_object = None # if player.hitting object == None: run hit on self. else: if not player.hitting:object = self: dont do anything since its not you
 
         # frame speed
         self.walking_frame_speed = 0.3
