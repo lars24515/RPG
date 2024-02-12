@@ -89,7 +89,7 @@ class Game:
         self.screen = pygame.display.set_mode((WIDTH, HEIGHT))
         self.running = True
         # since then i can set positions beforehand, and then update the tile
-        # object once it is rendered by the player? old
+        # object once it is renderedby the player? old
         self.tiles = pygame.sprite.Group()
         self.player = Player( (self.WIDTH // 2) - (AssetManager.player_front_idle_sprites[0].get_width() // 2), (self.HEIGHT // 2) - (AssetManager.player_front_idle_sprites[0].get_height() // 2) , "lars")
         self.clock = pygame.time.Clock()
@@ -101,20 +101,20 @@ class Game:
         self.viewport_y = self.HEIGHT // 2 - self.VIEWPORT_HEIGHT // 2
         self.visible_tiles = set()
         self.loading_progress = 0
-        self.world_size = 40
+        self.world_size = 5
         self.total_tiles = self.world_size*self.world_size
         self.center_x, self.center_y = self.WIDTH // 2, self.HEIGHT // 2
         pygame.font.init()
         self.font = pygame.font.Font("./Fonts/AurulentSansMNerdFont-Regular.otf", 20)
-        self.save_performance = False
         self.threshold_distance = 70
         self.close_tiles = pygame.sprite.Group()
         self.footstep_cooldown = 0  # Cooldown time in seconds
         self.footstep_cooldown_duration = 0.25  # Adjust as needed
         self.last_frame_time = time.time()
         self.debugging_mode = True
+        self.save_performance = False
         if self.save_performance:
-            self.world_size = 0
+            self.world_size = 1
 
     def draw(self, img, x, y, opacity=255):
         img.set_alpha(opacity)
@@ -245,7 +245,7 @@ class Game:
         AssetManager.environment_sounds["ambience"].play(-1)
         Hotbar.add_item(Item("wooden_sword", 1))
         Hotbar.add_item(Item("wooden_pickaxe", 1))
-        Hotbar.add_item(Item("wooden_axe", 1))
+        Hotbar.add_item(Item("wooden_axe", 2))
         while self.running:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
